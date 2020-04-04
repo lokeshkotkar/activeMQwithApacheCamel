@@ -2,6 +2,7 @@ package com.example.demo;
 
 import org.apache.activemq.jms.pool.PooledConnectionFactory;
 import org.apache.camel.CamelContext;
+import org.apache.camel.LoggingLevel;
 import org.apache.camel.RoutesBuilder;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.amqp.AMQPComponent;
@@ -21,9 +22,13 @@ public class ActiveMqRoute extends RouteBuilder  {
 	@Bean
 	public void configure() throws Exception {
 		System.out.println("inside congig method");
-		
+//		from("timer://test?period=5000")
 	from(directoryUrl + "?charset=utf-8").convertBodyTo(String.class)
 	.to("amqp:queue.testing").log("testing").end();
+	
+	from("amqp:queue.testing")
+	.log(LoggingLevel.INFO, "received message")
+	.to("amqp:queue.outbound").end();
 
 	}
 	
